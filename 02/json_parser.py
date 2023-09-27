@@ -12,11 +12,17 @@ def parse_json(
         keyword_callback=print
 ) -> None:
 
-    if not (required_fields and keywords):
-        raise TypeError("required_fields or keywords is None or empty")
+    if not json_str:
+        raise TypeError("json_str is empty")
+    if not (required_fields or keywords):
+        raise TypeError("required_fields and keywords is None or empty")
+    if not required_fields:
+        raise TypeError("required_fields is None or empty")
+    if not keywords:
+        raise TypeError("keywords is None or empty")
 
     json_dict = json.loads(json_str)
-    need_keys = list(filter(lambda x: x in json_dict.keys(), required_fields))
+    need_keys = list(set(filter(lambda x: x in json_dict.keys(), required_fields)))
 
     for key in need_keys:
         for word in json_dict[key].split():
