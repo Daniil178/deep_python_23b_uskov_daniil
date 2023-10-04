@@ -95,7 +95,6 @@ class ParserTest(TestCase):
             expected_calls_num = 0
             self.assertEqual(expected_calls_num, len(mock_print.mock_calls))
 
-    # '{"k1": "w1 w2", "k2": "w1 w4", "k4": "w4 w6"}'
     def test_parse_register_words(self):
         with mock.patch("json_parser.print_words") as mock_print:
             parse_json(example, ['k1', 'k2'], ['W1'], mock_print)
@@ -105,4 +104,15 @@ class ParserTest(TestCase):
         with mock.patch("json_parser.print_words") as mock_print:
             parse_json(example, ['k2', 'k4'], ['W6', 'w4'], mock_print)
             expected_calls_num = 3
+            self.assertEqual(expected_calls_num, len(mock_print.mock_calls))
+
+    def test_parse_exact_occurrence(self):
+        with mock.patch("json_parser.print_words") as mock_print:
+            parse_json(example, ['k1', 'k2'], ['1'], mock_print)
+            expected_calls_num = 0
+            self.assertEqual(expected_calls_num, len(mock_print.mock_calls))
+
+        with mock.patch("json_parser.print_words") as mock_print:
+            parse_json(example, ['k2', 'k4'], ['W', 'w4'], mock_print)
+            expected_calls_num = 2
             self.assertEqual(expected_calls_num, len(mock_print.mock_calls))
