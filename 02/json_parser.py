@@ -23,8 +23,9 @@ def parse_json(
 
     json_dict = json.loads(json_str)
     need_keys = list(set(filter(lambda x: x in json_dict.keys(), required_fields)))
+    keywords_lower = list(map(lambda x: x.lower(), keywords))
 
     for key in need_keys:
         for word in json_dict[key].split():
-            if word in keywords:
+            if word.lower() in keywords_lower:
                 keyword_callback(word)
