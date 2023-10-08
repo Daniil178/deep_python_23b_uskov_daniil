@@ -1,7 +1,12 @@
+Name             Stmts   Miss  Cover   Missing
+----------------------------------------------
+json_parser.py      18      1    94%   5
+test_parser.py     127      0   100%
+----------------------------------------------
+TOTAL              145      1    99%
 Name                Stmts   Miss  Cover   Missing
 -------------------------------------------------
 decorator_mean.py      20      0   100%
-json_parser.py         18      1    94%   5
-tests.py               85      1    99%   74
+test_decorator.py      39      1    97%   12
 -------------------------------------------------
-TOTAL                 123      2    98%
+TOTAL                  59      1    98%
