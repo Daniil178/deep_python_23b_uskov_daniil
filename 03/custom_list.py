@@ -1,17 +1,7 @@
 class CustomList(list):
-    def __init__(self, data: list = None):
-        if data is None:
-            data = []
-
-        super().__init__(data)
-        self.data = data
-
-    def __len__(self):
-        return len(self.data)
-
     def __add__(self, list2):
         res = []
-        list_left = self.data.copy()
+        list_left = self.copy()
         list_right = list2.copy()
 
         if len(list2) < len(self):
@@ -26,7 +16,7 @@ class CustomList(list):
 
     def __radd__(self, list2):
         res = []
-        list_left = self.data.copy()
+        list_left = self.copy()
         list_right = list2.copy()
 
         if len(list2) < len(self):
@@ -41,7 +31,7 @@ class CustomList(list):
 
     def __sub__(self, list2):
         res = []
-        list_left = self.data.copy()
+        list_left = self.copy()
         list_right = list2.copy()
 
         if len(list2) < len(self):
@@ -56,7 +46,7 @@ class CustomList(list):
 
     def __rsub__(self, list2):
         res = []
-        list_left = self.data.copy()
+        list_left = self.copy()
         list_right = list2.copy()
 
         if len(list2) < len(self):
@@ -70,22 +60,22 @@ class CustomList(list):
         return CustomList(res)
 
     def __eq__(self, list2):
-        return sum(self.data) == sum(list2)
+        return sum(self) == sum(list2)
 
     def __ne__(self, list2):
-        return sum(self.data) != sum(list2)
+        return sum(self) != sum(list2)
 
     def __lt__(self, list2):
-        return sum(self.data) < sum(list2)
+        return sum(self) < sum(list2)
 
     def __le__(self, list2):
-        return sum(self.data) <= sum(list2)
+        return sum(self) <= sum(list2)
 
     def __gt__(self, list2):
-        return sum(self.data) > sum(list2)
+        return sum(self) > sum(list2)
 
     def __ge__(self, list2):
         return sum(self) >= sum(list2)
 
     def __str__(self):
-        return f"|{self.data}, sum = {sum(self.data)}|"
+        return f"|{self[:]}, sum = {sum(self)}|"
