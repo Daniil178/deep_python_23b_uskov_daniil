@@ -8,6 +8,9 @@ class StrTemplate:
 
         self.template = template
 
+    def __set_name__(self, owner, name):
+        self.name = f"str_template_descr_{name}"
+
     def __get__(self, obj, objtype):
         if obj is None:
             return None
@@ -35,6 +38,9 @@ class FixNumber:
 
         self.low_border = low_border
         self.high_border = high_border
+
+    def __set_name__(self, owner, name):
+        self.name = f"number_template_descr_{name}"
 
     def __get__(self, obj, objtype):
         if obj is None:
@@ -64,6 +70,9 @@ class ChoiceList:
             choice_list = []
 
         self.choice_list = choice_list
+
+    def __set_name__(self, owner, name):
+        self.name = f"choice_template_descr_{name}"
 
     def __get__(self, obj, objtype):
         if obj is None:

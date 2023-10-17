@@ -9,6 +9,9 @@ class CustomClass(metaclass=CustomMeta):
     def __init__(self, val):
         self.par_pub = val
 
+    def __str__(self):
+        return "Custom_by_metaclass"
+
     def __len__(self):
         return self.custom_par_pub
 
@@ -26,7 +29,7 @@ class CustomClass(metaclass=CustomMeta):
 
 
 class TestCustomMeta(TestCase):
-    def test_new_param(self):
+    def test_attr(self):
         c = CustomClass(50)
 
         self.assertEqual(50, c.custom_par_pub)
@@ -38,29 +41,16 @@ class TestCustomMeta(TestCase):
                          str(err.exception))
         self.assertEqual(AttributeError, type(err.exception))
 
-        self.assertEqual(10, c._custom_par_prot)
+        c.custom_par_pub = 100
+        self.assertEqual(100, c.custom_par_pub)
 
-        with self.assertRaises(AttributeError) as err:
-            var = c._par_prot
+        c.par_pub = 200
+        self.assertEqual(100, c.custom_par_pub)
 
-        self.assertEqual("'CustomClass' object has no attribute '_par_prot'", str(err.exception))
-        self.assertEqual(AttributeError, type(err.exception))
-
-        self.assertEqual(100, c._CustomClass__custom_par_private)
-
-        with self.assertRaises(AttributeError) as err:
-            var = c._CustomClass__par_private
-
-        self.assertEqual("'CustomClass' object has no attribute "
-                         "'_CustomClass__par_private'",
-                         str(err.exception))
-        self.assertEqual(AttributeError, type(err.exception))
-
-    def test_new_func(self):
+    def test_func_public(self):
         c = CustomClass(50)
 
         self.assertEqual(1, c.custom_foo())
-
         with self.assertRaises(AttributeError) as err:
             c.foo()
 
@@ -68,8 +58,13 @@ class TestCustomMeta(TestCase):
                          str(err.exception))
         self.assertEqual(AttributeError, type(err.exception))
 
-        self.assertEqual(2, c._custom_boo())
+        c.custom_foo = lambda x: x * 2
+        self.assertEqual(4, c.custom_foo(2))
 
+    def test_func_protected(self):
+        c = CustomClass(5)
+
+        self.assertEqual(2, c._custom_boo())
         with self.assertRaises(AttributeError) as err:
             var = c._boo()
 
@@ -77,8 +72,13 @@ class TestCustomMeta(TestCase):
                          str(err.exception))
         self.assertEqual(AttributeError, type(err.exception))
 
-        self.assertEqual(3, c._CustomClass__custom_go())
+        c._custom_boo = lambda x: x ** 2
+        self.assertEqual(1024, c._custom_boo(32))
 
+    def test_func_private(self):
+        c = CustomClass(7)
+
+        self.assertEqual(3, c._CustomClass__custom_go())
         with self.assertRaises(AttributeError) as err:
             var = c._CustomClass__go()
 
@@ -87,8 +87,14 @@ class TestCustomMeta(TestCase):
                          str(err.exception))
         self.assertEqual(AttributeError, type(err.exception))
 
-        # magic methods don`t change name
-        self.assertEqual(c.custom_par_pub, len(c))
+        c._CustomClass__custom_go = lambda x: 15
+        self.assertEqual(15, c._CustomClass__custom_go(4))
+
+    def test_func_magic(self):
+        c = CustomClass(10)
+
+        self.assertEqual("Custom_by_metaclass", str(c))
+        self.assertEqual(10, len(c))
 
     def test_add_param(self):
         c = CustomClass(50)
@@ -118,5 +124,51 @@ class TestCustomMeta(TestCase):
 
         self.assertEqual("'CustomClass' object has no attribute "
                          "'_TestCustomMeta__qwe'",
+                         str(err.exception))
+        self.assertEqual(AttributeError, type(err.exception))
+
+    def test_attr_class_protected(self):
+        c = CustomClass(30)
+
+        self.assertEqual(10, c._custom_par_prot)
+        with self.assertRaises(AttributeError) as err:
+            var = c._par_prot
+
+        self.assertEqual("'CustomClass' object has no attribute '_par_prot'", str(err.exception))
+        self.assertEqual(AttributeError, type(err.exception))
+
+        c._custom_par_prot = 99
+        self.assertEqual(99, c._custom_par_prot)
+        c._par_prot = 199
+        self.assertEqual(99, c._custom_par_prot)
+
+        with self.assertRaises(AttributeError) as err:
+            var = c._par_prot
+
+        self.assertEqual("'CustomClass' object has no attribute '_par_prot'", str(err.exception))
+        self.assertEqual(AttributeError, type(err.exception))
+
+    def test_attr_class_private(self):
+        c = CustomClass(4)
+
+        self.assertEqual(100, c._CustomClass__custom_par_private)
+        with self.assertRaises(AttributeError) as err:
+            var = c._CustomClass__par_private
+
+        self.assertEqual("'CustomClass' object has no attribute "
+                         "'_CustomClass__par_private'",
+                         str(err.exception))
+        self.assertEqual(AttributeError, type(err.exception))
+
+        c._CustomClass__custom_par_private = 44
+        self.assertEqual(44, c._CustomClass__custom_par_private)
+        c._CustomClass__par_private = 244
+        self.assertEqual(44, c._CustomClass__custom_par_private)
+
+        with self.assertRaises(AttributeError) as err:
+            var = c._CustomClass__par_private
+
+        self.assertEqual("'CustomClass' object has no attribute "
+                         "'_CustomClass__par_private'",
                          str(err.exception))
         self.assertEqual(AttributeError, type(err.exception))
