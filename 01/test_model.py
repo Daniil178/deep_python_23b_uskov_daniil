@@ -23,73 +23,91 @@ class ModelTest(TestCase):
         param1: str = "qwe"
         self.assertEqual(str, type(param1))
 
-        with mock.patch.object(SomeModel, "predict", return_value=0.0):
-            result = predict_message_mood(param1, SomeModel())
-            self.assertEqual("неуд", result)
+        model = SomeModel()
+        model.predict = mock.MagicMock(return_value=0.0)
+        result = predict_message_mood(param1, model)
+        model.predict.assert_called_with("qwe")
+        self.assertEqual("неуд", result)
 
-        with mock.patch.object(SomeModel, "predict", return_value=1.0):
-            result = predict_message_mood(param1, SomeModel())
-            self.assertEqual("отл", result)
+        model.predict = mock.MagicMock(return_value=1.0)
+        result = predict_message_mood(param1, model)
+        model.predict.assert_called_with("qwe")
+        self.assertEqual("отл", result)
 
-        with mock.patch.object(SomeModel, "predict", return_value=0.5):
-            result = predict_message_mood(param1, SomeModel())
-            self.assertEqual("норм", result)
+        model.predict = mock.MagicMock(return_value=0.5)
+        result = predict_message_mood(param1, model)
+        model.predict.assert_called_with("qwe")
+        self.assertEqual("норм", result)
 
     def test_predict_border(self):
-        message: str = "qwe"
-        self.assertEqual(str, type(message))
+        param1: str = "qwe"
+        self.assertEqual(str, type(param1))
+        model = SomeModel()
 
-        with mock.patch.object(SomeModel, "predict", return_value=0.3):
-            result = predict_message_mood(message, SomeModel())
-            self.assertEqual("норм", result)
+        model.predict = mock.MagicMock(return_value=0.3)
+        result = predict_message_mood(param1, model)
+        model.predict.assert_called_with("qwe")
+        self.assertEqual("норм", result)
 
-        with mock.patch.object(SomeModel, "predict", return_value=0.8):
-            result = predict_message_mood(message, SomeModel())
-            self.assertEqual("норм", result)
+        model.predict = mock.MagicMock(return_value=0.8)
+        result = predict_message_mood(param1, model)
+        model.predict.assert_called_with("qwe")
+        self.assertEqual("норм", result)
 
-        with mock.patch.object(SomeModel, "predict", return_value=0.299999999):
-            result = predict_message_mood(message, SomeModel())
-            self.assertEqual("неуд", result)
+        model.predict = mock.MagicMock(return_value=0.29999999)
+        result = predict_message_mood(param1, model)
+        model.predict.assert_called_with("qwe")
+        self.assertEqual("неуд", result)
 
-        with mock.patch.object(SomeModel, "predict", return_value=0.800000001):
-            result = predict_message_mood(message, SomeModel())
-            self.assertEqual("отл", result)
+        model.predict = mock.MagicMock(return_value=0.80000001)
+        result = predict_message_mood(param1, model)
+        model.predict.assert_called_with("qwe")
+        self.assertEqual("отл", result)
 
-        with mock.patch.object(SomeModel, "predict", return_value=0.301):
-            result = predict_message_mood(message, SomeModel())
-            self.assertEqual("норм", result)
+        model.predict = mock.MagicMock(return_value=0.301)
+        result = predict_message_mood(param1, model)
+        model.predict.assert_called_with("qwe")
+        self.assertEqual("норм", result)
 
-        with mock.patch.object(SomeModel, "predict", return_value=0.79999):
-            result = predict_message_mood(message, SomeModel())
-            self.assertEqual("норм", result)
+        model.predict = mock.MagicMock(return_value=0.7999999)
+        result = predict_message_mood(param1, model)
+        model.predict.assert_called_with("qwe")
+        self.assertEqual("норм", result)
 
     def test_predict_change_border(self):
-        message: str = "message"
-        self.assertEqual(str, type(message))
+        param1: str = "message"
+        self.assertEqual(str, type(param1))
+        model = SomeModel()
 
-        with mock.patch.object(SomeModel, "predict", return_value=0.3):
-            result = predict_message_mood(message, SomeModel(), 0.4)
-            self.assertEqual("неуд", result)
+        model.predict = mock.MagicMock(return_value=0.3)
+        result = predict_message_mood(param1, model, 0.4)
+        model.predict.assert_called_with("message")
+        self.assertEqual("неуд", result)
 
-        with mock.patch.object(SomeModel, "predict", return_value=0.8):
-            result = predict_message_mood(message, SomeModel(), 0.1, 0.9)
-            self.assertEqual("норм", result)
+        model.predict = mock.MagicMock(return_value=0.8)
+        result = predict_message_mood(param1, model, 0.1, 0.9)
+        model.predict.assert_called_with("message")
+        self.assertEqual("норм", result)
 
-        with mock.patch.object(SomeModel, "predict", return_value=0.2):
-            result = predict_message_mood(message, SomeModel(), 0.1, 0.15)
-            self.assertEqual("отл", result)
+        model.predict = mock.MagicMock(return_value=0.2)
+        result = predict_message_mood(param1, model, 0.1, 0.15)
+        model.predict.assert_called_with("message")
+        self.assertEqual("отл", result)
 
-        with mock.patch.object(SomeModel, "predict", return_value=0.9):
-            result = predict_message_mood(message, SomeModel(), 0.92, 0.99)
-            self.assertEqual("неуд", result)
+        model.predict = mock.MagicMock(return_value=0.9)
+        result = predict_message_mood(param1, model, 0.92, 0.99)
+        model.predict.assert_called_with("message")
+        self.assertEqual("неуд", result)
 
-        with mock.patch.object(SomeModel, "predict", return_value=0.301):
-            result = predict_message_mood(message, SomeModel(), 0.301)
-            self.assertEqual("норм", result)
+        model.predict = mock.MagicMock(return_value=0.301)
+        result = predict_message_mood(param1, model, 0.301)
+        model.predict.assert_called_with("message")
+        self.assertEqual("норм", result)
 
-        with mock.patch.object(SomeModel, "predict", return_value=0.79999):
-            result = predict_message_mood(message, SomeModel(), 0.79, 0.799)
-            self.assertEqual("отл", result)
+        model.predict = mock.MagicMock(return_value=0.79999)
+        result = predict_message_mood(param1, model, 0.79, 0.799)
+        model.predict.assert_called_with("message")
+        self.assertEqual("отл", result)
 
     def test_error_not_str_in_model(self):
         param: int = 1234
@@ -114,28 +132,34 @@ class ModelTest(TestCase):
     def tests_errors_thresholds(self):
         message: str = "qwerty"
         self.assertEqual(str, type(message))
+        model = SomeModel()
 
-        with mock.patch.object(SomeModel, "predict", return_value=0.5):
-            with self.assertRaises(TypeError) as err:
-                predict_message_mood(message, SomeModel(), 0.5, 0.2)
+        model.predict = mock.MagicMock(return_value=0.5)
 
-            self.assertEqual("bad thresholds", str(err.exception))
-            self.assertEqual(TypeError, type(err.exception))
+        with self.assertRaises(TypeError) as err:
+            predict_message_mood(message, model, 0.5, 0.2)
+            model.predict.assert_called_with("qwerty")
 
-            with self.assertRaises(TypeError) as err:
-                predict_message_mood(message, SomeModel(), -0.1, 0.2)
+        self.assertEqual("bad thresholds", str(err.exception))
+        self.assertEqual(TypeError, type(err.exception))
 
-            self.assertEqual("bad thresholds", str(err.exception))
-            self.assertEqual(TypeError, type(err.exception))
+        with self.assertRaises(TypeError) as err:
+            predict_message_mood(message, model, -0.1, 0.2)
+            model.predict.assert_called_with("qwerty")
 
-            with self.assertRaises(TypeError) as err:
-                predict_message_mood(message, SomeModel(), 0.2, 1.5)
+        self.assertEqual("bad thresholds", str(err.exception))
+        self.assertEqual(TypeError, type(err.exception))
 
-            self.assertEqual("bad thresholds", str(err.exception))
-            self.assertEqual(TypeError, type(err.exception))
+        with self.assertRaises(TypeError) as err:
+            predict_message_mood(message, model, 0.2, 1.5)
+            model.predict.assert_called_with("qwerty")
 
-            with self.assertRaises(TypeError) as err:
-                predict_message_mood(message, SomeModel(), 0.9)
+        self.assertEqual("bad thresholds", str(err.exception))
+        self.assertEqual(TypeError, type(err.exception))
 
-            self.assertEqual("bad thresholds", str(err.exception))
-            self.assertEqual(TypeError, type(err.exception))
+        with self.assertRaises(TypeError) as err:
+            predict_message_mood(message, model, 0.9)
+            model.predict.assert_called_with("qwerty")
+
+        self.assertEqual("bad thresholds", str(err.exception))
+        self.assertEqual(TypeError, type(err.exception))
