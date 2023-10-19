@@ -1,9 +1,9 @@
 Name            Stmts   Miss  Cover   Missing
 ---------------------------------------------
 model.py           18      0   100%
-test_model.py     102      0   100%
+test_model.py     125      4    97%   141, 148, 155, 162
 ---------------------------------------------
-TOTAL             120      0   100%
+TOTAL             143      4    97%
 Name                Stmts   Miss  Cover   Missing
 -------------------------------------------------
 generator.py           22      2    91%   25-26
