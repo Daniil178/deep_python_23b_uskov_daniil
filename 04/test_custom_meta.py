@@ -102,7 +102,7 @@ class TestCustomMeta(TestCase):
         c.qwe = "qwerty"
         self.assertEqual("qwerty", c.custom_qwe)
         with self.assertRaises(AttributeError) as err:
-            var = c.qwe
+            self.assertEqual("qwerty", c.qwe)
 
         self.assertEqual("'CustomClass' object has no attribute 'qwe'",
                          str(err.exception))
@@ -111,7 +111,7 @@ class TestCustomMeta(TestCase):
         c._qwe = "qwerty"
         self.assertEqual("qwerty", c._custom_qwe)
         with self.assertRaises(AttributeError) as err:
-            var = c._qwe
+            self.assertEqual("qwerty", c._qwe)
 
         self.assertEqual("'CustomClass' object has no attribute '_qwe'",
                          str(err.exception))
@@ -120,10 +120,10 @@ class TestCustomMeta(TestCase):
         c.__qwe = "qwerty"
         self.assertEqual("qwerty", c.__custom_qwe)
         with self.assertRaises(AttributeError) as err:
-            var = c.__qwe
+            self.assertEqual("qwerty", c._CustomClass__qwe)
 
         self.assertEqual("'CustomClass' object has no attribute "
-                         "'_TestCustomMeta__qwe'",
+                         "'_CustomClass__qwe'",
                          str(err.exception))
         self.assertEqual(AttributeError, type(err.exception))
 
@@ -140,13 +140,12 @@ class TestCustomMeta(TestCase):
         c._custom_par_prot = 99
         self.assertEqual(99, c._custom_par_prot)
         c._par_prot = 199
-        self.assertEqual(99, c._custom_par_prot)
-
         with self.assertRaises(AttributeError) as err:
-            var = c._par_prot
+            self.assertEqual(199, c._par_prot)
 
         self.assertEqual("'CustomClass' object has no attribute '_par_prot'", str(err.exception))
         self.assertEqual(AttributeError, type(err.exception))
+        self.assertEqual(99, c._custom_par_prot)
 
     def test_attr_class_private(self):
         c = CustomClass(4)
@@ -163,12 +162,51 @@ class TestCustomMeta(TestCase):
         c._CustomClass__custom_par_private = 44
         self.assertEqual(44, c._CustomClass__custom_par_private)
         c._CustomClass__par_private = 244
-        self.assertEqual(44, c._CustomClass__custom_par_private)
-
         with self.assertRaises(AttributeError) as err:
-            var = c._CustomClass__par_private
+            self.assertEqual(244, c._CustomClass__par_private)
 
         self.assertEqual("'CustomClass' object has no attribute "
                          "'_CustomClass__par_private'",
                          str(err.exception))
         self.assertEqual(AttributeError, type(err.exception))
+        self.assertEqual(44, c._CustomClass__custom_par_private)
+
+    def test_class_without_exemplar(self):
+        self.assertEqual(1, CustomClass.custom_foo())
+        with self.assertRaises(AttributeError) as err:
+            CustomClass.foo()
+
+        self.assertEqual("type object 'CustomClass' "
+                         "has no attribute 'foo'",
+                         str(err.exception))
+        self.assertEqual(AttributeError, type(err.exception))
+
+        CustomClass.qwe = "qwerty"
+        self.assertEqual("qwerty", CustomClass.custom_qwe)
+        with self.assertRaises(AttributeError) as err:
+            var = CustomClass.qwe
+        
+        self.assertEqual("type object 'CustomClass' "
+                         "has no attribute 'qwe'", str(err.exception))
+        self.assertEqual(AttributeError, type(err.exception))
+
+        CustomClass.qwe = 10
+        with self.assertRaises(AttributeError) as err:
+            self.assertEqual(10, CustomClass.qwe)
+
+        self.assertEqual(
+            "type object 'CustomClass' " "has no attribute 'qwe'", str(err.exception)
+        )
+        self.assertEqual(AttributeError, type(err.exception))
+        self.assertEqual("qwerty", CustomClass.custom_qwe)
+
+        self.assertEqual(10, CustomClass._custom_par_prot)
+        with self.assertRaises(AttributeError) as err:
+            var = CustomClass._par_prot
+        
+        self.assertEqual(
+            "type object 'CustomClass' "
+            "has no attribute '_par_prot'", str(err.exception)
+        )
+        self.assertEqual(AttributeError, type(err.exception))
+        self.assertEqual(10, CustomClass._custom_par_prot)
