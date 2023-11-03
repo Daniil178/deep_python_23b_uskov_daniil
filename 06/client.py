@@ -31,16 +31,15 @@ class UrlClients:
             raise TypeError("filename is str")
         self.filename = filename
 
-        self.queue_urls = self.get_urls()
+        self.queue_urls = Queue()
 
-    def get_urls(self) -> Queue:
-        urls = Queue()
+    def get_urls(self) -> None:
+
         with open(self.filename, 'r', encoding='utf-8') as file:
             for line in file:
-                urls.put(line)
-        urls.put(None)
+                self.queue_urls.put(line)
 
-        return urls
+        self.queue_urls.put(None)
 
     def __call__(self, port: int = 65432) -> None:
         hostname = socket.gethostname()
@@ -56,6 +55,8 @@ class UrlClients:
 
         for thread in threads:
             thread.start()
+
+        self.get_urls()
 
         for thread in threads:
             thread.join()
