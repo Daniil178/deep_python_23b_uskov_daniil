@@ -26,7 +26,6 @@ def fake_server(clients):
 
 
 class TestClients(TestCase):
-
     def test_create_clients(self):
         clients = UrlClients(5, "urls.txt")
         self.assertEqual(5, clients.count)
@@ -59,9 +58,7 @@ class TestClients(TestCase):
 
             clients(port)
 
-            expected_calls = [
-                                 mock.call(que, (hostname, port))
-                             ] * count
+            expected_calls = [mock.call(que, (hostname, port))] * count
 
             self.assertEqual(expected_calls, mock_send_urls.mock_calls)
 
@@ -73,9 +70,7 @@ class TestClients(TestCase):
 
             clients(port)
 
-            expected_calls = [
-                                 mock.call(que, (hostname, port))
-                             ] * count
+            expected_calls = [mock.call(que, (hostname, port))] * count
 
             self.assertEqual(expected_calls, mock_send_urls.mock_calls)
 
@@ -99,11 +94,6 @@ class TestClients(TestCase):
 
         server_thread.join()
 
-        expected_out = [
-                    'f1: {"1": 2}',
-                    'f2: {"1": 2}',
-                    'f3: {"1": 2}',
-                    ''
-                    ]
+        expected_out = ['f1: {"1": 2}', 'f2: {"1": 2}', 'f3: {"1": 2}', ""]
 
         self.assertEqual(expected_out, out.getvalue().split("\n"))

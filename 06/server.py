@@ -14,12 +14,7 @@ def processing_url(url: str, k: int) -> json:
     soup = BeautifulSoup(resp.text, "html.parser")
 
     all_count = Counter(
-        map(str.lower,
-            filter(
-                lambda x: len(x) > 3 and x.isalpha(),
-                soup.text.split()
-                )
-            )
+        map(str.lower, filter(lambda x: len(x) > 3 and x.isalpha(), soup.text.split()))
     )
 
     return json.dumps(dict(all_count.most_common(k)), ensure_ascii=False)
@@ -50,9 +45,7 @@ class Server:
         self.sum_urls = 0
         self.workers = [
             threading.Thread(
-                target=work,
-                name=f"Worker-{i}",
-                args=(self.clients, self.count_freq)
+                target=work, name=f"Worker-{i}", args=(self.clients, self.count_freq)
             )
             for i in range(0, self.num_workers)
         ]

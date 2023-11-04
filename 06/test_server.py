@@ -19,7 +19,6 @@ def fake_client(address):
 
 
 class TestServer(TestCase):
-
     def test_create_threads(self):
         count, freq = 5, 7
         with mock.patch("server.work") as mock_work:
@@ -27,9 +26,7 @@ class TestServer(TestCase):
             que = serv.clients
             serv(port=65432, timeout=0.1)
 
-            expected_calls = [
-                mock.call(que, freq)
-            ] * count
+            expected_calls = [mock.call(que, freq)] * count
 
             self.assertEqual(expected_calls, mock_work.mock_calls)
             for thread in serv.workers:
@@ -41,9 +38,7 @@ class TestServer(TestCase):
             que = serv.clients
             serv(port=65432, timeout=0.1)
 
-            expected_calls = [
-                mock.call(que, freq)
-            ] * count
+            expected_calls = [mock.call(que, freq)] * count
 
             self.assertEqual(expected_calls, mock_work.mock_calls)
             for thread in serv.workers:
@@ -66,7 +61,7 @@ class TestServer(TestCase):
             server_thread.join()
 
             expected_calls = [mock.call("url", freq)]
-            expected_out = ['Count of processing urls = 1', '{"url": 4}', '']
+            expected_out = ["Count of processing urls = 1", '{"url": 4}', ""]
 
             self.assertEqual(expected_calls, mock_url.mock_calls)
             self.assertEqual(expected_out, out.getvalue().split("\n"))
@@ -90,17 +85,20 @@ class TestServer(TestCase):
             server_thread.join()
 
             expected_calls = [
-                            mock.call("url", freq),
-                            mock.call("url", freq),
-                            mock.call("url", freq)
-                              ]
+                mock.call("url", freq),
+                mock.call("url", freq),
+                mock.call("url", freq),
+            ]
 
             expected_out = [
-                            'Count of processing urls = 1', '{"url": 4}',
-                            'Count of processing urls = 2', '{"url": 4}',
-                            'Count of processing urls = 3', '{"url": 4}',
-                            ''
-                            ]
+                "Count of processing urls = 1",
+                '{"url": 4}',
+                "Count of processing urls = 2",
+                '{"url": 4}',
+                "Count of processing urls = 3",
+                '{"url": 4}',
+                "",
+            ]
 
             self.assertEqual(expected_calls, mock_url.mock_calls)
             self.assertEqual(expected_out, out.getvalue().split("\n"))

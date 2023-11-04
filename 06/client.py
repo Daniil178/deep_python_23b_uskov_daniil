@@ -35,7 +35,7 @@ class UrlClients:
 
     def get_urls(self) -> None:
 
-        with open(self.filename, 'r', encoding='utf-8') as file:
+        with open(self.filename, "r", encoding="utf-8") as file:
             for line in file:
                 self.queue_urls.put(line)
 
@@ -48,7 +48,7 @@ class UrlClients:
             threading.Thread(
                 target=send_url,
                 name=f"Client-{i}",
-                args=(self.queue_urls, (hostname, port))
+                args=(self.queue_urls, (hostname, port)),
             )
             for i in range(self.count)
         ]
