@@ -56,11 +56,13 @@ class LRUCache:
         else:
             if key in self.__dict:
                 self.__remove_from_dict(key)
+
             self.__dict[self.__last_elem] = (
                 self.__dict[self.__last_elem][0],
                 self.__dict[self.__last_elem][1],
                 key,
             )
+
             self.__dict[key] = (value, self.__last_elem, "")
             self.__last_elem = key
             if self.__limit < len(self.__dict.keys()):
