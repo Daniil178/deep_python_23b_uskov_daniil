@@ -1,12 +1,30 @@
 import asyncio
 import argparse
 import aiohttp
+from collections import Counter
+import json
+
+from bs4 import BeautifulSoup
+
+
+async def prepare_url(resp):
+    soup = BeautifulSoup(resp, "html.parser")
+    
+    all_count = Counter(
+        map(str.lower, filter(lambda x: len(x) > 3 and x.isalpha(), soup.text.split()))
+    )
+    
+    return json.dumps(dict(all_count.most_common(5)), ensure_ascii=False)
 
 
 async def fetch_url(url: str) -> str:
     async with aiohttp.ClientSession() as session:
         async with session.get(url, timeout=5) as resp:
-            return resp.status
+            res = json.dumps({}, ensure_ascii=False)
+            if resp.status == 200:
+                txt = await resp.text()
+                res = await prepare_url(txt)
+            return res
 
 
 class AsyncUrls:
