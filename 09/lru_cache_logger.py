@@ -1,6 +1,5 @@
 from typing import Any
 import logging
-from collections import Counter
 
 import argparse
 
@@ -33,7 +32,9 @@ class LRUCache:
 
         value = self.__dict[key][0]
         if key in self.__dict:
-            self._logger.warning("begin remove key = `%s`, val = `%s` from cache", key, value)
+            self._logger.warning(
+                "begin remove key = `%s`, val = `%s` from cache", key, value
+            )
             self.__remove_from_dict(key)
             self._logger.debug("remove key = `%s` is successfully", key)
 
@@ -165,7 +166,9 @@ if __name__ == "__main__":
 
     args = vars(parser.parse_args())
 
-    cache = LRUCache(limit=3, enable_stdout=args["stdout"], enable_filter=args["filter"])
+    cache = LRUCache(
+        limit=3, enable_stdout=args["stdout"], enable_filter=args["filter"]
+    )
 
     cache["k1"] = "val1"
     cache["k2"] = "val2"
