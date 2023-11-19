@@ -172,3 +172,5 @@ if __name__ == "__main__":
     cache["k3"] = "val3"
     cache["k3"] = "new_val3"
     cache["k4"] = "val4"
+    value1 = cache["k1"]
+    value2 = cache["k2"]
