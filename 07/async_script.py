@@ -22,7 +22,7 @@ async def fetch_url(url: str) -> json:
         async with session.get(url, timeout=5) as resp:
             res = json.dumps({}, ensure_ascii=False)
             if resp.status == 200:
-                txt = await resp.text()
+                txt = resp.text()
                 res = await prepare_url(txt)
             return res
 
