@@ -93,7 +93,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-k", "--k", type=int, help="count of freq words", required=True
     )
-    args = vars(parser.parse_args())
+    args = parser.parse_args()
 
-    server = Server(int(args["workers"]), int(args["k"]))
+    server = Server(int(args.workers), int(args.k))
     server()

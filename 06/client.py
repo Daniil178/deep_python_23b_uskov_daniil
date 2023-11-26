@@ -70,7 +70,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-c", "--count", type=int, help="count of threads", required=True
     )
-    args = vars(parser.parse_args())
+    args = parser.parse_args()
 
-    clients = UrlClients(int(args["count"]), args["filename"])
+    clients = UrlClients(int(args.count), args.filename)
     clients()
