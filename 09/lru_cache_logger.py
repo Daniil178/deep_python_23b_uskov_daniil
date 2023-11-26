@@ -4,6 +4,42 @@ import logging
 import argparse
 
 
+def create_logger(stdout_flag: bool, filter_flag: bool):
+    logger = logging.getLogger("cache_loger")
+    logger.setLevel(logging.DEBUG)
+    logger.propagate = False
+
+    stream_formatter = logging.Formatter(
+        "|STREAM|\t%(asctime)s\t%(levelname)s\t%(message)s"
+    )
+
+    file_formatter = logging.Formatter(
+        datefmt="%Y-%m-%d %H:%M:%S",
+        fmt="|FILE|\t[%(asctime)s]\t[%(levelname)s]\t[%(name)s]:\t%(message)s",
+    )
+
+    file_handler = logging.FileHandler("cache_log.log", mode="w")
+    file_handler.setLevel(logging.INFO)
+    file_handler.setFormatter(file_formatter)
+
+    if stdout_flag:
+        stream_handler = logging.StreamHandler()
+        stream_handler.setLevel(logging.DEBUG)
+        stream_handler.setFormatter(stream_formatter)
+
+        if filter_flag:
+            stream_handler.addFilter(CacheFilter())
+
+        logger.addHandler(stream_handler)
+
+    if filter_flag:
+        file_handler.addFilter(CacheFilter())
+
+    logger.addHandler(file_handler)
+
+    return logger
+
+
 class CacheFilter(logging.Filter):
     def filter(self, record):
         even_words = len(record.msg.split()) % 2 == 0
@@ -15,15 +51,13 @@ class CacheFilter(logging.Filter):
 class LRUCache:
     __slots__ = ["__dict", "__limit", "__first_elem", "__last_elem", "_logger"]
 
-    def __init__(
-        self, limit: int = 42, enable_stdout: bool = False, enable_filter: bool = False
-    ) -> None:
+    def __init__(self, limit: int = 42, custom_logger: logging = logging) -> None:
         self.__limit = limit
         self.__dict: dict[str, tuple[Any, str, str]] = {}
         # key: (value, prev, next)
         self.__first_elem: str
         self.__last_elem: str
-        self._logger = self._create_logger(enable_stdout, enable_filter)
+        self._logger = custom_logger
 
         self._logger.debug("cache is create with limit=%s", self.__limit)
 
@@ -106,43 +140,6 @@ class LRUCache:
                 )
                 self.__remove_from_dict(self.__first_elem)
 
-    @staticmethod
-    def _create_logger(stdout_flag: bool, filter_flag: bool):
-
-        logger = logging.getLogger("cache_loger")
-        logger.setLevel(logging.DEBUG)
-        logger.propagate = False
-
-        stream_formatter = logging.Formatter(
-            "|STREAM|\t%(asctime)s\t%(levelname)s\t%(message)s"
-        )
-
-        file_formatter = logging.Formatter(
-            datefmt="%Y-%m-%d %H:%M:%S",
-            fmt="|FILE|\t[%(asctime)s]\t[%(levelname)s]\t[%(name)s]:\t%(message)s",
-        )
-
-        file_handler = logging.FileHandler("cache_log.log", mode="w")
-        file_handler.setLevel(logging.INFO)
-        file_handler.setFormatter(file_formatter)
-
-        if stdout_flag:
-            stream_handler = logging.StreamHandler()
-            stream_handler.setLevel(logging.DEBUG)
-            stream_handler.setFormatter(stream_formatter)
-
-            if filter_flag:
-                stream_handler.addFilter(CacheFilter())
-
-            logger.addHandler(stream_handler)
-
-        if filter_flag:
-            file_handler.addFilter(CacheFilter())
-
-        logger.addHandler(file_handler)
-
-        return logger
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="LRUCache with logging")
@@ -164,11 +161,10 @@ if __name__ == "__main__":
         default=False,
     )
 
-    args = vars(parser.parse_args())
+    args = parser.parse_args()
+    cust_logger = create_logger(args.stdout, args.filter)
 
-    cache = LRUCache(
-        limit=3, enable_stdout=args["stdout"], enable_filter=args["filter"]
-    )
+    cache = LRUCache(limit=3, custom_logger=cust_logger)
 
     cache["k1"] = "val1"
     cache["k2"] = "val2"
