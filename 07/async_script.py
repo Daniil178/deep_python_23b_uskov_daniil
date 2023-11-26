@@ -22,7 +22,7 @@ async def fetch_url(url: str) -> json:
         async with session.get(url, timeout=5) as resp:
             res = json.dumps({}, ensure_ascii=False)
             if resp.status == 200:
-                txt = resp.text()
+                txt = await resp.text()
                 res = await prepare_url(txt)
             return res
 
@@ -61,8 +61,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="async prepare urls")
     parser.add_argument("-c", "--count", type=int, default=1)
     parser.add_argument("-f", "--filename", type=str, default="urls.txt")
-    args = vars(parser.parse_args())
+    args = parser.parse_args()
 
-    async_parser = AsyncUrls(int(args["count"]), args["filename"])
+    async_parser = AsyncUrls(int(args.count), args.filename)
 
     asyncio.run(async_parser())

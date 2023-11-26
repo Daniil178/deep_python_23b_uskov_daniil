@@ -1,6 +1,6 @@
 import unittest
 import asyncio
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, AsyncMock
 from collections import Counter
 import json
 
@@ -24,7 +24,7 @@ class TestFunctions(unittest.IsolatedAsyncioTestCase):
     async def test_fetch_url(self):
         mock_resp = MagicMock()
         mock_resp.status = 200
-        mock_resp.text = MagicMock(
+        mock_resp.text = AsyncMock(
             return_value="<html><body><p>Test HTML text</p></body></html>"
         )
 
