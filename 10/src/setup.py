@@ -5,9 +5,7 @@ def main():
     setup(
         name="cjson",
         version="1.0",
-        ext_modules=[
-            Extension("cjson", ["cjson.c"])
-        ],
+        ext_modules=[Extension("cjson", ["cjson.c"])],
     )
 
 

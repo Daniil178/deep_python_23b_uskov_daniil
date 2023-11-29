@@ -76,6 +76,8 @@ PyObject* cjson_loads(PyObject* self, PyObject* args) {
             }
         }
     }
+    if (key_buf) free(key_buf);
+    if (val_buf) free(val_buf);
 
     return dict;
 }
