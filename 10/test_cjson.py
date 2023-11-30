@@ -5,7 +5,6 @@ from unittest import TestCase
 import timeit
 
 import ujson
-import numpy as np
 
 import cjson
 
@@ -69,14 +68,14 @@ class TestJson(TestCase):
         def cjson_dumps():
             cjson.dumps(self.large_data)
 
-        cjson_time = np.mean(timeit.repeat(cjson_dumps, number=100, repeat=5))
+        cjson_time = min(timeit.repeat(cjson_dumps, number=100, repeat=5))
         print(f"cjson.dumps time: {cjson_time} seconds")
 
     def test_ujson_dumps(self):
         def ujson_dumps():
             ujson.dumps(self.large_data)
 
-        ujson_time = np.mean(timeit.repeat(ujson_dumps, number=100, repeat=5))
+        ujson_time = min(timeit.repeat(ujson_dumps, number=100, repeat=5))
         print(f"ujson.dumps time: {ujson_time} seconds")
 
     def test_cjson_loads(self):
@@ -85,7 +84,7 @@ class TestJson(TestCase):
         def cjson_loads():
             cjson.loads(cjson_string)
 
-        cjson_time = np.mean(timeit.repeat(cjson_loads, number=100, repeat=5))
+        cjson_time = min(timeit.repeat(cjson_loads, number=100, repeat=5))
         print(f"cjson.loads time: {cjson_time} seconds")
 
     def test_ujson_loads(self):
@@ -94,5 +93,5 @@ class TestJson(TestCase):
         def ujson_loads():
             ujson.loads(ujson_string)
 
-        ujson_time = np.mean(timeit.repeat(ujson_loads, number=100, repeat=5))
+        ujson_time = min(timeit.repeat(ujson_loads, number=100, repeat=5))
         print(f"ujson.loads time: {ujson_time} seconds")
