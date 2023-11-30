@@ -43,9 +43,11 @@ class AsyncUrls:
             url = await self.que_urls.get()
             try:
                 result = await fetch_url(url)
+                print(f"{url}: {result}")
+            except Exception as err:
+                print(f"Error processing {url}: {err}")
             finally:
                 self.que_urls.task_done()
-            print(f"{url}: {result}")
 
     async def __call__(self) -> None:
         workers = [asyncio.create_task(self.work()) for _ in range(self.count_workers)]
