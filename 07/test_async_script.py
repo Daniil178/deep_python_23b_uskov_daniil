@@ -3,6 +3,8 @@ import asyncio
 from unittest.mock import patch, MagicMock, AsyncMock, call
 from collections import Counter
 import json
+from contextlib import redirect_stdout
+import io
 
 from bs4 import BeautifulSoup
 
@@ -52,15 +54,34 @@ class TestAsyncUrls(unittest.IsolatedAsyncioTestCase):
 
     async def test_work(self):
         async_urls = AsyncUrls(count_workers=3, filename="test_urls.txt")
-        await async_urls.que_urls.put("http://fakeurl.com")
 
-        async def mocked_fetch_url(url):
-            return '{"mocked": 1, "result": 1}'
+        mocked_fetch_url = AsyncMock()
+        mocked_fetch_url.return_value = '{"mocked": 1, "result": 1}'
 
-        with patch.object(async_script, "fetch_url", new=mocked_fetch_url):
-            await async_urls()
+        urls = [
+            f"http://fakeurl{i + 1}.com" for i in range(3)
+        ]
+        for url in urls:
+            await async_urls.que_urls.put(url)
 
-            self.assertEqual(async_urls.que_urls.qsize(), 0)
+        out = io.StringIO()
+
+        res = [url + ': {"mocked": 1, "result": 1}' for url in urls]
+        res += [url for url in urls]
+        res += [': {"mocked": 1, "result": 1}'] * 3
+        res += ['']
+
+        with redirect_stdout(out):
+            with patch.object(async_script, "fetch_url", new=mocked_fetch_url):
+                await async_urls()
+
+                expected_calls = [call(url) for url in urls]
+        mocked_fetch_url.assert_has_calls(expected_calls, any_order=True)
+
+        self.assertEqual(async_urls.que_urls.qsize(), 0)
+        out_res = out.getvalue().split('\n')
+        for ans in out_res:
+            self.assertEqual(True, ans in res)
 
     async def test_call_multiple_workers_speed(self):
         count_workers = 3
@@ -92,28 +113,8 @@ class TestAsyncUrls(unittest.IsolatedAsyncioTestCase):
                 time_one_worker / count_workers, time_multiple_workers, 1
             )
 
-    async def test_workers(self):
-        async_urls = AsyncUrls(count_workers=3, filename="test_urls.txt")
-
-        mocked_fetch_url = AsyncMock()
-        mocked_fetch_url.return_value = '{"mocked": 1, "result": 1}'
-
-        urls = [
-            f"http://fakeurl{i + 1}.com" for i in range(3)
-        ]
-        for url in urls:
-            await async_urls.que_urls.put(url)
-
-        with patch.object(async_script, "fetch_url", new=mocked_fetch_url):
-            await async_urls()
-
-            expected_calls = [call(url) for url in urls]
-            mocked_fetch_url.assert_has_calls(expected_calls, any_order=True)
-
-        self.assertEqual(async_urls.que_urls.qsize(), 0)
-
     async def test_call_one_worker(self):
-        async_urls = AsyncUrls(count_workers=1, filename="test_urls.txt")
+        async_urls = AsyncUrls(count_workers=1, filename="test_empty.txt")
 
         mocked_fetch_url = AsyncMock()
         mocked_fetch_url.return_value = '{"mocked": 1, "result": 1}'
@@ -124,16 +125,25 @@ class TestAsyncUrls(unittest.IsolatedAsyncioTestCase):
         for url in urls:
             await async_urls.que_urls.put(url)
 
-        with patch.object(async_script, "fetch_url", new=mocked_fetch_url):
-            await async_urls()
+        out = io.StringIO()
 
-            expected_calls = [call(url) for url in urls]
-            mocked_fetch_url.assert_has_calls(expected_calls, any_order=True)
+        res = [url + ': {"mocked": 1, "result": 1}' for url in urls]
+        res += ['']
+
+        with redirect_stdout(out):
+            with patch.object(async_script, "fetch_url", new=mocked_fetch_url):
+                await async_urls()
+
+                expected_calls = [call(url) for url in urls]
+        mocked_fetch_url.assert_has_calls(expected_calls, any_order=True)
 
         self.assertEqual(async_urls.que_urls.qsize(), 0)
+        out_res = out.getvalue().split('\n')
+        for ans in out_res:
+            self.assertEqual(True, ans in res)
 
     async def test_call_five_workers(self):
-        async_urls = AsyncUrls(count_workers=5, filename="test_urls.txt")
+        async_urls = AsyncUrls(count_workers=5, filename="test_empty.txt")
 
         mocked_fetch_url = AsyncMock()
         mocked_fetch_url.return_value = '{"mocked": 1, "result": 1}'
@@ -144,10 +154,19 @@ class TestAsyncUrls(unittest.IsolatedAsyncioTestCase):
         for url in urls:
             await async_urls.que_urls.put(url)
 
-        with patch.object(async_script, "fetch_url", new=mocked_fetch_url):
-            await async_urls()
+        out = io.StringIO()
 
-            expected_calls = [call(url) for url in urls]
-            mocked_fetch_url.assert_has_calls(expected_calls, any_order=True)
+        res = [url + ': {"mocked": 1, "result": 1}' for url in urls]
+        res += ['']
+
+        with redirect_stdout(out):
+            with patch.object(async_script, "fetch_url", new=mocked_fetch_url):
+                await async_urls()
+
+                expected_calls = [call(url) for url in urls]
+        mocked_fetch_url.assert_has_calls(expected_calls, any_order=True)
 
         self.assertEqual(async_urls.que_urls.qsize(), 0)
+        out_res = out.getvalue().split('\n')
+        for ans in out_res:
+            self.assertEqual(True, ans in res)
