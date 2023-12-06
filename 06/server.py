@@ -26,12 +26,15 @@ def work(queue_connections: Queue, freq_count: int) -> None:
         if conn is None:
             queue_connections.put(None)
             break
-
-        data = conn.recv(1024)
-        url = data.decode()
-        res = processing_url(url, freq_count)
-        conn.send(res.encode())
-        conn.close()
+        try:
+            data = conn.recv(1024)
+            url = data.decode()
+            res = processing_url(url, freq_count)
+            conn.send(res.encode())
+        except Exception as err:
+            print(f"Error processing: {err}")
+        finally:
+            conn.close()
 
 
 class Server:

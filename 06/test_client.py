@@ -1,5 +1,6 @@
 import socket
 import threading
+import time
 from unittest import TestCase, mock
 from queue import Queue
 import json
@@ -9,11 +10,10 @@ from contextlib import redirect_stdout
 from client import UrlClients, send_url
 
 
-def fake_server(clients):
+def fake_server(clients, port):
     server_sock = socket.socket()
-    server_sock.bind(("localhost", 65432))
+    server_sock.bind(("localhost", port))
     server_sock.listen()
-
     for _ in range(clients):
 
         client, _ = server_sock.accept()
@@ -75,8 +75,8 @@ class TestClients(TestCase):
             self.assertEqual(expected_calls, mock_send_urls.mock_calls)
 
     def test_send_url(self):
-
-        server_thread = threading.Thread(target=fake_server, args=(3,))
+        port = 65333
+        server_thread = threading.Thread(target=fake_server, args=(3, port))
         server_thread.start()
 
         out = StringIO()
@@ -86,9 +86,7 @@ class TestClients(TestCase):
         que.put("f2")
         que.put("f3")
         que.put(None)
-
-        port, hostname = 65432, "localhost"
-
+        hostname = "localhost"
         with redirect_stdout(out):
             send_url(que, (hostname, port))
 
