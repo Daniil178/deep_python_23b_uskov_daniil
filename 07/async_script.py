@@ -36,12 +36,10 @@ class AsyncUrls:
     async def get_urls(self) -> None:
         queue_limit = 50
         with open(self.filename, "r", encoding="utf-8") as file:
-            while True:
-                if self.que_urls.qsize() < queue_limit:
-                    line = file.readline()
-                    if not line:
-                        break
-                    await self.que_urls.put(line.strip())
+            for line in file:
+                while self.que_urls.qsize() > queue_limit:
+                    await asyncio.sleep(0.5)
+                await self.que_urls.put(line)
 
     async def work(self) -> None:
         while True:

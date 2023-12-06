@@ -48,9 +48,9 @@ class TestAsyncUrls(unittest.IsolatedAsyncioTestCase):
         await async_urls.get_urls()
 
         self.assertEqual(async_urls.que_urls.qsize(), 3)
-        self.assertEqual(await async_urls.que_urls.get(), "http://fakeurl1.com")
-        self.assertEqual(await async_urls.que_urls.get(), "http://fakeurl2.com")
-        self.assertEqual(await async_urls.que_urls.get(), "http://fakeurl3.com")
+        self.assertEqual(await async_urls.que_urls.get(), "http://fakeurl1.com\n")
+        self.assertEqual(await async_urls.que_urls.get(), "http://fakeurl2.com\n")
+        self.assertEqual(await async_urls.que_urls.get(), "http://fakeurl3.com\n")
 
     async def test_work(self):
         async_urls = AsyncUrls(count_workers=3, filename="test_urls.txt")
