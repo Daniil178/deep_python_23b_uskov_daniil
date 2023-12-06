@@ -10,18 +10,17 @@ from contextlib import redirect_stdout
 from client import UrlClients, send_url
 
 
-def fake_server(clients, port):
+def fake_server(clients, port_server):
     server_sock = socket.socket()
-    server_sock.bind(("localhost", port))
+    server_sock.bind(("localhost", port_server))
     server_sock.listen()
     for _ in range(clients):
-
         client, _ = server_sock.accept()
         client.recv(1024)
         ans = json.dumps({1: 2}, ensure_ascii=False)
         client.send(ans.encode())
+        time.sleep(0.01)
         client.close()
-
     server_sock.close()
 
 
@@ -50,7 +49,7 @@ class TestClients(TestCase):
         self.assertEqual(TypeError, type(err.exception))
 
     def test_create_threads(self):
-        count, filename = 5, "urls.txt"
+        count, filename = 5, "test.txt"
         with mock.patch("client.send_url") as mock_send_urls:
             clients = UrlClients(count, filename)
             que = clients.queue_urls
@@ -62,7 +61,7 @@ class TestClients(TestCase):
 
             self.assertEqual(expected_calls, mock_send_urls.mock_calls)
 
-        count, filename = 10, "urls.txt"
+        count, filename = 10, "test.txt"
         with mock.patch("client.send_url") as mock_send_urls:
             clients = UrlClients(count, filename)
             que = clients.queue_urls
@@ -87,6 +86,7 @@ class TestClients(TestCase):
         que.put("f3")
         que.put(None)
         hostname = "localhost"
+        time.sleep(0.1)
         with redirect_stdout(out):
             send_url(que, (hostname, port))
 

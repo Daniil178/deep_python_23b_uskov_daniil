@@ -10,18 +10,17 @@ def send_url(urls: Queue, local_address: tuple) -> None:
         if url is None:
             urls.put(url)
             break
+        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             client.connect(local_address)
-
             client.send(url.encode())
             res = client.recv(1024)
             print(f"{url}: {res.decode()}")
         except Exception as err:
             print(f"Error processing {url}: {err}")
         finally:
-            if not (client is None):
-                client.close()
+            urls.task_done()
+            client.close()
 
 
 class UrlClients:
@@ -37,9 +36,11 @@ class UrlClients:
         self.queue_urls = Queue()
 
     def get_urls(self) -> None:
-
+        queue_limit = 80
         with open(self.filename, "r", encoding="utf-8") as file:
             for line in file:
+                while self.queue_urls.qsize() > queue_limit:
+                    pass
                 self.queue_urls.put(line)
 
         self.queue_urls.put(None)
